@@ -1,0 +1,11 @@
+# Autoconf files
+*.cache
+.deps
+*.log
+*.status
+configure~
+Makefile
+
+# Project files
+out/
+build/

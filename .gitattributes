@@ -1,0 +1,9 @@
+[attr]generated linguist-generated=true diff=generated
+
+configure           generated
+Makefile.in         generated
+aclocal.m4          generated
+compile             generated
+depcomp             generated
+install-sh          generated
+missing             generated
