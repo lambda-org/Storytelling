@@ -4,8 +4,9 @@
 *.log
 *.status
 configure~
-Makefile
 
 # Project files
 out/
 build/
+*.o
+storytelling
