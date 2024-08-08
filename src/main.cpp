@@ -1,30 +1,32 @@
-#include <cstdio>
-#include <string>
 #include <SFML/Graphics.hpp>
+#include <spdlog/spdlog.h>
 
-int main()
-{
-    sf::RenderWindow window(sf::VideoMode(800, 600), "Test title");
-    sf::CircleShape shape(50);
-    shape.setFillColor(sf::Color::Green);
+int main() {
+#ifdef DEBUG
+  spdlog::set_level(spdlog::level::debug);
+#endif // DEBUG
+  spdlog::debug("Creating SFML window");
 
-    while (window.isOpen()) {
-        sf::Event event;
+  sf::RenderWindow window(sf::VideoMode(800, 600), "Test title");
+  sf::CircleShape shape(50);
+  shape.setFillColor(sf::Color::Green);
 
-        while (window.pollEvent(event)) {
-            switch (event.type)
-            {
-            case sf::Event::Closed:
-                window.close(); break;
-            }
+  while (window.isOpen()) {
+    sf::Event event;
 
-        }
-        window.clear();
-
-        window.draw(shape);
-
-        window.display();
+    while (window.pollEvent(event)) {
+      switch (event.type) {
+      case sf::Event::Closed:
+        window.close();
+        break;
+      }
     }
+    window.clear();
 
-    return 0;
+    window.draw(shape);
+
+    window.display();
+  }
+
+  return 0;
 }
