@@ -1,44 +1,31 @@
-PROJECT 	:= cpp
-OUTPUT_FILE := storytelling
-CFLAGS 		:= -Wall -Wextra -g -O3
-LFLAGS   	:= -lsfml-graphics -lsfml-window -lsfml-system
+_compiler    := g++
+_cflags      := -Wall -Wextra -g -O3
+_lflags      := -lsfml-graphics -lsfml-window -lsfml-system -lspdlog -lfmt
+_srcdir      := src
+_output      := storytelling
+_dirs        := $(shell find $(_srcdir) -type d)
 
-# ------------------------- Do not edit ----------------------------------
-_srcdir     := src
-_builddir	:= build
-_output     := $(OUTPUT_FILE)
-_cflags 	:= $(CFLAGS)
-_lflags 	:= $(LFLAGS)
+all: $(_output)
+	@echo  Done!
 
-ifeq ($(PROJECT), cpp)
-	_type = .cpp
-	_compiler = g++
-else
-	_type = .c
-	_compiler = gcc
-endif
+debug : def_debug all
 
-_sources    := $(wildcard src/*$(_type))
-_obj	    := $(patsubst $(_srcdir)/%$(_type), $(_builddir)/%.o, $(_sources))
+def_debug :
+	$(eval _makeflags := debug)
 
-all: dirs $(_output)
-	@echo Done!
+$(_output): sources
+	$(_compiler) $(_cflags) -o $(_output) $(_obj) $(_lflags)
 
-dirs :
-	@mkdir -p $(_builddir)
+sources : dirs
+	$(eval _obj := $(shell find $(_dirs) -name '*.o'))
 
-$(_output): $(_obj) 
-	$(_compiler) $(_cflags) -o $(_output) $(_obj) $(LFLAGS)
+dirs: $(_dirs)
 
-$(_builddir)/%.o: $(_srcdir)/%$(_type)
-	$(_compiler) $(_cflags) -c $< -o $@
+$(_dirs):
+	@make -C $@ $(_makeflags)
 
 clean:
 	rm -f $(_output)
-	rm -f $(_builddir)/*.o
+	find $(_dirs) -name '*.o' -exec rm -f {} +
 
-
-list :
-	@echo "all clean"
-
-.PHONY : list clean dirs all
+.PHONY : list dirs all $(_dirs) sources debug def_debug

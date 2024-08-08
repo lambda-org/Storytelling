@@ -4185,6 +4185,8 @@ esac
 fi
 
 
+CPPFLAGS="$CPPFLAGS -I/usr/include/"
+
 
 
 
@@ -4408,19 +4410,81 @@ else
 printf "%s\n" "yes" >&6; }
 
 fi
-ac_fn_c_check_header_compile "$LINENO" "stdio.h" "ac_cv_header_stdio_h" "$ac_includes_default"
-if test "x$ac_cv_header_stdio_h" = xyes
+       for ac_header in spdlog/version.h
+do :
+  ac_fn_c_check_header_compile "$LINENO" "spdlog/version.h" "ac_cv_header_spdlog_version_h" "$ac_includes_default"
+if test "x$ac_cv_header_spdlog_version_h" = xyes
 then :
-  printf "%s\n" "#define HAVE_STDIO_H 1" >>confdefs.h
+  printf "%s\n" "#define HAVE_SPDLOG_VERSION_H 1" >>confdefs.h
 
+else case e in #(
+  e)
+                  as_fn_error $? "spdlog/spdlog.h not found, please install spdlog library" "$LINENO" 5
+                   ;;
+esac
 fi
-ac_fn_c_check_header_compile "$LINENO" "stdlib.h" "ac_cv_header_stdlib_h" "$ac_includes_default"
-if test "x$ac_cv_header_stdlib_h" = xyes
+
+done
+
+for dir in `echo $CPPFLAGS | tr ' ' '\n' | grep -E '^-I' | sed 's/-I//'`; do
+    as_ac_File=`printf "%s\n" "ac_cv_file_$dir/tl/expected.hpp" | sed "$as_sed_sh"`
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $dir/tl/expected.hpp" >&5
+printf %s "checking for $dir/tl/expected.hpp... " >&6; }
+if eval test \${$as_ac_File+y}
 then :
-  printf "%s\n" "#define HAVE_STDLIB_H 1" >>confdefs.h
-
+  printf %s "(cached) " >&6
+else case e in #(
+  e) test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "$dir/tl/expected.hpp"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi ;;
+esac
+fi
+eval ac_res=\$$as_ac_File
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_File"\" = x"yes"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: tl/expected.hpp found in $dir" >&5
+printf "%s\n" "$as_me: tl/expected.hpp found in $dir" >&6;}
+else case e in #(
+  e) as_fn_error $? "tl/expected.hpp not found in $dir" "$LINENO" 5 ;;
+esac
 fi
 
+
+    as_ac_File=`printf "%s\n" "ac_cv_file_$dir/spdlog/spdlog.h" | sed "$as_sed_sh"`
+{ printf "%s\n" "$as_me:${as_lineno-$LINENO}: checking for $dir/spdlog/spdlog.h" >&5
+printf %s "checking for $dir/spdlog/spdlog.h... " >&6; }
+if eval test \${$as_ac_File+y}
+then :
+  printf %s "(cached) " >&6
+else case e in #(
+  e) test "$cross_compiling" = yes &&
+  as_fn_error $? "cannot check for file existence when cross compiling" "$LINENO" 5
+if test -r "$dir/spdlog/spdlog.h"; then
+  eval "$as_ac_File=yes"
+else
+  eval "$as_ac_File=no"
+fi ;;
+esac
+fi
+eval ac_res=\$$as_ac_File
+	       { printf "%s\n" "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+printf "%s\n" "$ac_res" >&6; }
+if eval test \"x\$"$as_ac_File"\" = x"yes"
+then :
+  { printf "%s\n" "$as_me:${as_lineno-$LINENO}: spdlog/spdlog.h found in $dir" >&5
+printf "%s\n" "$as_me: spdlog/spdlog.h found in $dir" >&6;}
+else case e in #(
+  e) as_fn_error $? "spdlog/spdlog.h not found in $dir" "$LINENO" 5 ;;
+esac
+fi
+
+done
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5145,4 +5209,5 @@ if test -n "$ac_unrecognized_opts" && test "$enable_option_checking" != no; then
   { printf "%s\n" "$as_me:${as_lineno-$LINENO}: WARNING: unrecognized options: $ac_unrecognized_opts" >&5
 printf "%s\n" "$as_me: WARNING: unrecognized options: $ac_unrecognized_opts" >&2;}
 fi
+
 
