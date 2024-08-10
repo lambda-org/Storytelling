@@ -31,7 +31,9 @@ namespace st {
 
 	  public:
 		Scene(std::unique_ptr<pugi::xml_document> doc);
-		tl::expected<ActionData, SceneException> getActionData(bool reverse = true);
-		tl::expected<bool, st::SceneException> preloadDialogs(bool reverse = false);
+		tl::expected<ActionData, SceneException> getActionData();
+		tl::expected<bool, st::SceneException> preloadDialogs();
+		void setTreeID(int id);
+		void setActionID(int id);
 	};
 }

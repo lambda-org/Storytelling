@@ -4,7 +4,6 @@
 #include <SFML/Graphics/Image.hpp>
 #include <SFML/System/String.hpp>
 #include <fmt/core.h>
-#include <iostream>
 #include <iterator>
 #include <memory>
 #include <pugixml.hpp>
@@ -16,34 +15,42 @@
 st::Scene::Scene(std::unique_ptr<pugi::xml_document> doc) :
 	sceneDocument(std::move(doc)), sceneDialogs(std::make_unique<std::vector<std::string>>()) {
 	spdlog::info("Parsing current scene data file");
-	bufferTreeNode = sceneDocument->child("scene").child("tree");
+	this->bufferTreeNode = sceneDocument->child("scene").child("tree");
 
-	if (!bufferTreeNode) {
+	if (!this->bufferTreeNode) {
 		spdlog::error("Missing 'tree' node in XML"); // !!! No exception !!!
 		return;
 	}
 
-	treeActions = bufferTreeNode.attribute("actions").as_int();
+	this->treeActions = this->bufferTreeNode.attribute("actions").as_int();
+	this->treeID	  = this->bufferTreeNode.attribute("id").as_int(-1);
 
-	if (treeActions == 0) {
-		spdlog::warn("attribute 'actions' not set in first tree. Scene could be unoptimized");
+	if (this->treeID == -1) {
+		spdlog::error("Missing attribute 'id' at scene tree"); // !!! No exception !!!
+		return;
 	}
 
-	spdlog::debug("Preloading tree with {} actions", treeActions);
+	if (this->treeActions == 0) {
+		spdlog::warn("Tree ID {} is not optimized (missing 'actions' attribute)", treeID);
+		this->treeActions = std::distance(this->bufferTreeNode.children("action").begin(), this->bufferTreeNode.children("action").end());
+		spdlog::info("Counted {} actions", this->treeActions);
+	}
 
-	for (pugi::xml_node node : bufferTreeNode.children("action")) {
-		sceneDialogs->push_back(node.text().as_string());
+	spdlog::debug("Preloading tree with {} actions", this->treeActions);
+
+	for (pugi::xml_node node : this->bufferTreeNode.children("action")) {
+		this->sceneDialogs->push_back(node.text().as_string());
 	}
 }
 
-tl::expected<st::ActionData, st::SceneException> st::Scene::getActionData(bool reverse) {
+tl::expected<st::ActionData, st::SceneException> st::Scene::getActionData() {
 	ActionData ret = {
 		.currentString = this->sceneDialogs->at(this->actionID),
 		.endOfScene	   = false
 	};
 
-	if (this->actionID == this->treeActions - 1) {
-		auto dialogs = preloadDialogs(reverse);
+	if (this->actionID >= this->treeActions - 1) {
+		auto dialogs = preloadDialogs();
 
 		if (!dialogs.has_value()) {
 			spdlog::error("Error with scene ID {}", this->treeID);
@@ -55,32 +62,40 @@ tl::expected<st::ActionData, st::SceneException> st::Scene::getActionData(bool r
 	}
 
 	this->actionID += 1;
+
 	return ret;
 }
 
-tl::expected<bool, st::SceneException> st::Scene::preloadDialogs(bool reverse) {
-	if (reverse)
-		bufferTreeNode = bufferTreeNode.next_sibling();
-	else
-		bufferTreeNode = bufferTreeNode.previous_sibling();
+tl::expected<bool, st::SceneException> st::Scene::preloadDialogs() {
+	spdlog::debug("Changing scene tree");
+	this->bufferTreeNode = this->bufferTreeNode.next_sibling();
 
-	if (!bufferTreeNode)
+	if (!this->bufferTreeNode) {
+		spdlog::debug("End of scene reached");
 		return true;
-
-	treeID = bufferTreeNode.attribute("actions").as_int(-1);
-
-	if (treeID == -1) {
-		return tl::unexpected(st::TreeIDNotSetException);
 	}
 
-	if (std::distance(bufferTreeNode.children("action").begin(), bufferTreeNode.children("action").end()) == 0)
+	this->treeID	  = this->bufferTreeNode.attribute("id").as_int(-1);
+	this->treeActions = this->bufferTreeNode.attribute("actions").as_int(0);
+
+	if (this->treeID == -1)
+		return tl::unexpected(st::TreeIDNotSetException);
+
+	if (this->treeActions == 0) {
+		spdlog::warn("Tree ID {} is not optimized (missing 'actions' attribute)", this->treeID);
+		this->treeActions = std::distance(this->bufferTreeNode.children("action").begin(), this->bufferTreeNode.children("action").end());
+		spdlog::info("Counted {} actions", this->treeActions);
+	}
+
+	spdlog::debug("Preloading tree data");
+	if (this->treeActions == 0)
 		return tl::unexpected(st::EmptyTreeException);
 
 	this->actionID = 0;
-	sceneDialogs->clear();
+	this->sceneDialogs->clear();
 
-	for (pugi::xml_node node : bufferTreeNode.children("action")) {
-		sceneDialogs->push_back(node.text().as_string());
+	for (pugi::xml_node node : this->bufferTreeNode.children("action")) {
+		this->sceneDialogs->push_back(node.text().as_string());
 	}
 
 	return false;

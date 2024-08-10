@@ -1,4 +1,6 @@
 # Project files
 program/
+builddir/
+build/
 *.o
 storytelling

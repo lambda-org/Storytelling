@@ -85,24 +85,6 @@ int main() {
 
 							text.setString(ad.value().currentString);
 							break;
-						case sf::Keyboard::R:
-							ad = scene->getActionData(true);
-
-							if (!ad.has_value()) {
-								switch (ad.error()) {
-									case st::TreeIDNotSetException:
-										spdlog::error("Fatal: one of the scene tree has no ID");
-										break;
-
-									case st::EmptyTreeException:
-										spdlog::error("Fatal: scene dialog load error");
-										break;
-								}
-								window.close();
-								return -1;
-							}
-
-							break;
 					}
 					break;
 			}
