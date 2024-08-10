@@ -1,5 +1,5 @@
 CC := g++
-CFLAGS := -Wall -Wextra -g -O3 
+CFLAGS := -Wall -Wextra -g -O3 -std=c++17
 
 _sources := $(wildcard ./*.cpp)
 _obj := $(patsubst ./%.cpp, ./%.o, $(_sources))

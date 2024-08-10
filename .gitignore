@@ -1,12 +1,4 @@
-# Autoconf files
-*.cache
-.deps
-*.log
-*.status
-configure~
-
 # Project files
-out/
-build/
+program/
 *.o
 storytelling
